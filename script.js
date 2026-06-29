@@ -13,7 +13,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // ⚠️ 【重要】ここにFirebaseコンソールで取得したあなたの設定情報を貼り付けてください
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 const firebaseConfig = {
   apiKey: "AIzaSyCjnBEyIT5B74BtexjQtQdcNC0YOHMhozk",
