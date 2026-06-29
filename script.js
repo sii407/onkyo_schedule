@@ -23,7 +23,7 @@ const firebaseConfig = {
   measurementId: "G-42NR2GFW7M"
 };
 
-// FirebaseとFirestoreの初期化（重複を解消して1回だけにまとめました）
+// FirebaseとFirestoreの初期化（ここが全コードの中で1回目の宣言です）
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
