@@ -1,37 +1,18 @@
-// Firebase SDK の読み込み（CDN経由）
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    onSnapshot, 
-    doc, 
-    updateDoc, 
-    deleteDoc,
-    query,
-    orderBy 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// 📦 ブラウザのローカル保存庫（LocalStorage）からデータを読み込む関数
+function getLocalTasks() {
+    const tasks = localStorage.getItem('my_tasks');
+    return tasks ? JSON.parse(tasks) : [];
+}
 
-// Firebaseの設定情報（あなたのプロジェクト情報）
-const firebaseConfig = {
-  apiKey: "AIzaSyCjnBEyIT5B74BtexjQtQdcNC0YOHMhozk",
-  authDomain: "onkyo-schedule.firebaseapp.com",
-  projectId: "onkyo-schedule",
-  storageBucket: "onkyo-schedule.firebasestorage.app",
-  messagingSenderId: "608016974026",
-  appId: "1:608016974026:web:4484b01bf151b11ca97433",
-  measurementId: "G-42NR2GFW7M"
-};
-
-// FirebaseとFirestoreの初期化（ここが全コードの中で1回目の宣言です）
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// データを保存する「コレクション」への参照
-const tasksCollection = collection(db, "tasks");
+// 📦 ブラウザのローカル保存庫にデータを保存する関数
+function saveLocalTasks(tasks) {
+    localStorage.setItem('my_tasks', JSON.stringify(tasks));
+}
 
 // 画面にタスクを描画する関数
-function renderTasks(tasks) {
+function renderTasks() {
+    const tasks = getLocalTasks();
+
     document.getElementById('todo-list').innerHTML = '';
     document.getElementById('progress-list').innerHTML = '';
     document.getElementById('done-list').innerHTML = '';
@@ -75,21 +56,8 @@ function renderTasks(tasks) {
     });
 }
 
-// ☁️ クラウド（Firestore）からリアルタイムにデータを取得して監視する
-const q = query(tasksCollection, orderBy("createdAt", "asc"));
-onSnapshot(q, (snapshot) => {
-    const tasks = [];
-    snapshot.forEach((doc) => {
-        tasks.push({
-            id: doc.id,
-            ...doc.data()
-        });
-    });
-    renderTasks(tasks);
-});
-
-// ☁️ クラウドへタスクを追加する関数
-async function addTask() {
+// ➕ タスクを追加する関数
+function addTask() {
     const titleInput = document.getElementById('taskTitle');
     const deadlineInput = document.getElementById('taskDeadline');
     const assigneeInput = document.getElementById('taskAssignee');
@@ -100,45 +68,45 @@ async function addTask() {
         return;
     }
 
-    try {
-        await addDoc(tasksCollection, {
-            title: titleInput.value,
-            deadline: deadlineInput.value,
-            assignee: assigneeInput.value,
-            status: statusSelect.value,
-            createdAt: Date.now()
-        });
+    const tasks = getLocalTasks();
+    const newTask = {
+        id: new Date().getTime().toString(), // 被らないIDを生成
+        title: titleInput.value,
+        deadline: deadlineInput.value,
+        assignee: assigneeInput.value,
+        status: statusSelect.value
+    };
 
-        // フォームをリセット
-        titleInput.value = '';
-        deadlineInput.value = '';
-        assigneeInput.value = '';
-    } catch (e) {
-        console.error("エラーが発生しました: ", e);
-    }
+    tasks.push(newTask);
+    saveLocalTasks(tasks);
+    renderTasks(); // 画面を更新
+
+    // フォームをリセット
+    titleInput.value = '';
+    deadlineInput.value = '';
+    assigneeInput.value = '';
 }
 
-// ☁️ クラウドのタスクのステータスを変更する関数
-window.moveTask = async function(id, newStatus) {
-    const taskDocRef = doc(db, "tasks", id);
-    try {
-        await updateDoc(taskDocRef, {
-            status: newStatus
-        });
-    } catch (e) {
-        console.error("更新エラー: ", e);
-    }
-}
-
-// ☁️ クラウドのタスクを削除する関数
-window.deleteTask = async function(id) {
-    if (confirm('このタスクを削除してもよろしいですか？')) {
-        const taskDocRef = doc(db, "tasks", id);
-        try {
-            await deleteDoc(taskDocRef);
-        } catch (e) {
-            console.error("削除エラー: ", e);
+// 🔄 タスクのステータスを変更する関数
+window.moveTask = function(id, newStatus) {
+    let tasks = getLocalTasks();
+    tasks = tasks.map(task => {
+        if (task.id === id) {
+            task.status = newStatus;
         }
+        return task;
+    });
+    saveLocalTasks(tasks);
+    renderTasks();
+}
+
+// ❌ タスクを削除する関数
+window.deleteTask = function(id) {
+    if (confirm('このタスクを削除してもよろしいですか？')) {
+        let tasks = getLocalTasks();
+        tasks = tasks.filter(task => task.id !== id);
+        saveLocalTasks(tasks);
+        renderTasks();
     }
 }
 
@@ -151,3 +119,6 @@ function escapeHTML(str) {
 
 // 追加ボタンのクリックイベントを設定
 document.getElementById('addTaskBtn').addEventListener('click', addTask);
+
+// 最初に画面を開いたときにタスクを表示する
+renderTasks();
