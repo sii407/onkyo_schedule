@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スケジュール管理ボード</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>タスク・スケジュール管理ボード</h1>
+    </header>
+
+    <div class="form-container">
+        <input type="text" id="taskTitle" placeholder="タスク名を入力" required>
+        <input type="date" id="taskDeadline">
+        <input type="text" id="taskAssignee" placeholder="担当者名">
+        <select id="taskStatus">
+            <option value="progress">今進行中のタスク</option>
+            <option value="todo">次に行うタスク</option>
+            <option value="done">終わったタスク</option>
+        </select>
+        <button id="addTaskBtn">追加</button>
+    </div>
+
+    <div class="board">
+        <div class="column column-progress">
+            <h2>今進行中のタスク</h2>
+            <div class="task-list" id="progress-list"></div>
+        </div>
+
+        <div class="column column-todo">
+            <h2>次に行うタスク</h2>
+            <div class="task-list" id="todo-list"></div>
+        </div>
+
+        <div class="column column-done">
+            <h2>終わったタスク</h2>
+            <div class="task-list" id="done-list"></div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

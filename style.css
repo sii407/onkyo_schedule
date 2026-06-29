@@ -1,0 +1,161 @@
+:root {
+    --bg-color: #f4f6f9;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --todo-color: #ffc107;
+    --progress-color: #17a2b8;
+    --done-color: #28a745;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* タスク入力フォーム */
+.form-container {
+    max-width: 800px;
+    margin: 0 auto 30px auto;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form-container input, .form-container select, .form-container button {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.form-container button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 0.5;
+    min-width: 100px;
+}
+
+.form-container button:hover {
+    background-color: #0056b3;
+}
+
+/* ボードレイアウト */
+.board {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+.column {
+    flex: 1;
+    background: #ebecf0;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 500px;
+}
+
+.column h2 {
+    font-size: 18px;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 3px solid;
+    text-align: center;
+}
+
+.column-todo h2 { border-bottom-color: var(--todo-color); }
+.column-progress h2 { border-bottom-color: var(--progress-color); }
+.column-done h2 { border-bottom-color: var(--done-color); }
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 450px;
+}
+
+/* タスクカード */
+.task-card {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+}
+
+.task-meta {
+    font-size: 12px;
+    color: #666;
+}
+
+.task-meta span {
+    margin-right: 10px;
+}
+
+/* 操作ボタン */
+.task-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-action {
+    background: #e2e8f0;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-action:hover {
+    background: #cbd5e1;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.btn-delete:hover {
+    background: #fca5a5;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .board {
+        flex-direction: column;
+    }
+    .column {
+        width: 100%;
+        min-height: auto;
+    }
+}
