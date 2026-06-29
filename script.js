@@ -1,4 +1,4 @@
-// Firebase SDK の読み込み
+// Firebase SDK の読み込み（CDN経由）
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getFirestore, 
@@ -12,8 +12,7 @@ import {
     orderBy 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ⚠️ 【重要】ここにFirebaseコンソールで取得したあなたの設定情報を貼り付けてください
-import { getAnalytics } from "firebase/analytics";
+// Firebaseの設定情報（あなたのプロジェクト情報）
 const firebaseConfig = {
   apiKey: "AIzaSyCjnBEyIT5B74BtexjQtQdcNC0YOHMhozk",
   authDomain: "onkyo-schedule.firebaseapp.com",
@@ -24,15 +23,11 @@ const firebaseConfig = {
   measurementId: "G-42NR2GFW7M"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-// Firebaseの初期化
+// FirebaseとFirestoreの初期化（重複を解消して1回だけにまとめました）
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// データを保存する「コレクション（フォルダのようなもの）」への参照
+// データを保存する「コレクション」への参照
 const tasksCollection = collection(db, "tasks");
 
 // 画面にタスクを描画する関数
@@ -48,7 +43,6 @@ function renderTasks(tasks) {
         const deadlineText = task.deadline ? task.deadline : '未設定';
         const assigneeText = task.assignee ? task.assignee : '未設定';
 
-        // ボタンの制御（Firebaseでは一意の文字列IDを使うため、IDをシングルクォーテーションで囲む文字列型にして関数に渡します）
         let actionButtons = '';
         if (task.status === 'todo') {
             actionButtons = `<button class="btn-action" onclick="moveTask('${task.id}', 'progress')">進行中に変更 ➔</button>`;
@@ -82,13 +76,12 @@ function renderTasks(tasks) {
 }
 
 // ☁️ クラウド（Firestore）からリアルタイムにデータを取得して監視する
-// （別のPCでデータが変わったときも、この処理が自動で走って画面が更新されます）
 const q = query(tasksCollection, orderBy("createdAt", "asc"));
 onSnapshot(q, (snapshot) => {
     const tasks = [];
     snapshot.forEach((doc) => {
         tasks.push({
-            id: doc.id, // Firestoreが自動生成するランダムなID
+            id: doc.id,
             ...doc.data()
         });
     });
@@ -113,7 +106,7 @@ async function addTask() {
             deadline: deadlineInput.value,
             assignee: assigneeInput.value,
             status: statusSelect.value,
-            createdAt: Date.now() // 並び替え用のタイムスタンプ
+            createdAt: Date.now()
         });
 
         // フォームをリセット
